@@ -8,11 +8,6 @@ const app = express();
 app.use(cookieParser());
 
 app.get("/test", (req, res) => {
-  res.cookie("token", "fsdbvb4ge5", {
-    maxAge: 100000000,
-    httpOnly: true,
-    secure: true,
-  });
   res.send(["hello world!"]);
 });
 
