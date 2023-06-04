@@ -21,7 +21,7 @@ export class UserController extends BaseController {
   }
 
   register(req: Request, res: Response, next: NextFunction) {
-    this.logger.log("REGISTER");
+    this.loggerService.log("REGISTER");
     res.send(["REGISTER"]);
   }
 }

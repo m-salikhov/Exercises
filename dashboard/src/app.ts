@@ -18,7 +18,6 @@ export class App {
     @inject(Types.LoggerService) private loggerService: LoggerService,
     @inject(Types.ExeptionFilter) private exeptionFilter: ExeptionFilter
   ) {
-    console.log(3);
     this.app = express();
     this.port = 8000;
   }
