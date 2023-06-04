@@ -1,10 +1,14 @@
+import { injectable } from "inversify";
 import { BaseController } from "../common/base.controller";
+import { HTTPError } from "../errors/http-error.class";
 import { LoggerService } from "../logger/logger.service";
 import { Response, Request, NextFunction } from "express";
+import "reflect-metadata";
 
+@injectable()
 export class UserController extends BaseController {
-  constructor(logger: LoggerService) {
-    super(logger);
+  constructor(loggerService: LoggerService) {
+    super(loggerService);
     this.bindRoutes([
       { path: "/login", method: "post", func: this.login },
       { path: "/register", method: "post", func: this.register },
@@ -12,10 +16,12 @@ export class UserController extends BaseController {
   }
 
   login(req: Request, res: Response, next: NextFunction) {
-    res.send(req.body);
+    console.log(req.body);
+    next(new HTTPError(401, "not auth", "LOGIN"));
   }
 
   register(req: Request, res: Response, next: NextFunction) {
+    this.logger.log("REGISTER");
     res.send(["REGISTER"]);
   }
 }

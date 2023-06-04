@@ -2,19 +2,25 @@ import express from "express";
 import { Server } from "http";
 import { LoggerService } from "./logger/logger.service";
 import { UserController } from "./users/users.controller";
+import { ExeptionFilter } from "./errors/exeption.filter";
+import { inject, injectable } from "inversify";
+import { Types } from "./types";
+import "reflect-metadata";
 
+@injectable()
 export class App {
   app: express.Express;
   port: number;
   server: Server;
-  logger: LoggerService;
-  UserController: UserController;
 
-  constructor(logger: LoggerService, UserController: UserController) {
+  constructor(
+    @inject(Types.UserController) private userController: UserController,
+    @inject(Types.LoggerService) private loggerService: LoggerService,
+    @inject(Types.ExeptionFilter) private exeptionFilter: ExeptionFilter
+  ) {
+    console.log(3);
     this.app = express();
     this.port = 8000;
-    this.logger = logger;
-    this.UserController = UserController;
   }
 
   useMid() {
@@ -22,15 +28,18 @@ export class App {
   }
 
   useRoutes() {
-    this.app.use("/users", this.UserController.router);
+    this.app.use("/users", this.userController.router);
   }
 
-  useExeptionFilter() {}
+  useExeptionFilter() {
+    this.app.use(this.exeptionFilter.catch.bind(this.exeptionFilter));
+  }
 
   async init() {
     this.useMid();
     this.useRoutes();
+    this.useExeptionFilter();
     this.server = this.app.listen(this.port);
-    this.logger.log(`Server listen on port ${this.port}`);
+    this.loggerService.log(`Server listen on port ${this.port}`);
   }
 }

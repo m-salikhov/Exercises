@@ -2,10 +2,11 @@
   "name": "dashboard",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "start": "nodemon --esm src/main.ts",
-    "dist": "tsc src/index.ts"
+    "dist": "tsc",
+    "testdec": "ts-node src/testdec.ts"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +14,8 @@
   "dependencies": {
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
+    "inversify": "^6.0.1",
+    "reflect-metadata": "^0.1.13",
     "tslog": "^4.8.2"
   },
   "devDependencies": {
