@@ -1,20 +1,27 @@
 import "reflect-metadata";
-import { Container } from "inversify";
+import { Container, ContainerModule, interfaces } from "inversify";
 import { App } from "./app";
-import { ExeptionFilter } from "./errors/exeption.filter";
-import { UserController } from "./users/users.controller";
 import { Types } from "./types";
 import { IExeptionFilter } from "./errors/exeption.filter.interface";
-import { LoggerService } from "./logger/logger.service";
+import { ExeptionFilter } from "./errors/exeption.filter";
 import { ILogger } from "./logger/logger.interface";
+import { LoggerService } from "./logger/logger.service";
+import { IUserController } from "./users/user.controller.interface";
+import { UserController } from "./users/users.controller";
 
-const appContainer = new Container();
-appContainer.bind<App>(Types.App).to(App);
-appContainer.bind<IExeptionFilter>(Types.ExeptionFilter).to(ExeptionFilter);
-appContainer.bind<UserController>(Types.UserController).to(UserController);
-appContainer.bind<ILogger>(Types.LoggerService).to(LoggerService);
-const app = appContainer.get<App>(Types.App);
+export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
+  bind<App>(Types.App).to(App);
+  bind<IExeptionFilter>(Types.ExeptionFilter).to(ExeptionFilter);
+  bind<IUserController>(Types.UserController).to(UserController);
+  bind<ILogger>(Types.LoggerService).to(LoggerService);
+});
 
-app.init();
+function bootstrap() {
+  const appContainer = new Container();
+  appContainer.load(appBindings);
+  const app = appContainer.get<App>(Types.App);
+  app.init();
+  return { app, appContainer };
+}
 
-export { app, appContainer };
+export const { app, appContainer } = bootstrap();
