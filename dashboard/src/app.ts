@@ -22,7 +22,7 @@ export class App {
     this.port = 8000;
   }
 
-  useMid() {
+  useBodyParser() {
     this.app.use(express.json());
   }
 
@@ -35,7 +35,7 @@ export class App {
   }
 
   async init() {
-    this.useMid();
+    this.useBodyParser();
     this.useRoutes();
     this.useExeptionFilter();
     this.server = this.app.listen(this.port);

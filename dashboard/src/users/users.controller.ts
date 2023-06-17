@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { BaseController } from "../common/base.controller";
 import { HTTPError } from "../errors/http-error.class";
 import { Response, Request, NextFunction } from "express";
@@ -8,14 +8,25 @@ import "reflect-metadata";
 import { UserLoginDTO } from "./dto/user-login.dto";
 import { UserRegisterDTO } from "./dto/user-register.dto";
 import { User } from "./user.entity";
+import { Types } from "../types";
+import { UserService } from "./users.service";
+import { ValidateMiddleware } from "../common/validate.middleware";
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
-  constructor(loggerService: ILogger) {
+  constructor(
+    @inject(Types.LoggerService) public loggerService: ILogger,
+    @inject(Types.UserService) private userServise: UserService
+  ) {
     super(loggerService);
     this.bindRoutes([
       { path: "/login", method: "post", func: this.login },
-      { path: "/register", method: "post", func: this.register },
+      {
+        path: "/register",
+        method: "post",
+        func: this.register,
+        middlewares: [new ValidateMiddleware(UserRegisterDTO)],
+      },
     ]);
   }
 
@@ -28,8 +39,13 @@ export class UserController extends BaseController implements IUserController {
     res: Response,
     next: NextFunction
   ) {
-    const newUser = new User(body.email, body.name);
-    await newUser.setPassword(body.password);
-    res.send(newUser);
+    const result = await this.userServise.createUser(body);
+
+    if (!result) {
+      next(new HTTPError(422, "Пользователь уже существует", "REGISTER"));
+      return;
+    }
+
+    res.send({ email: result.email });
   }
 }
