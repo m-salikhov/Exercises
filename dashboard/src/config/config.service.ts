@@ -13,6 +13,7 @@ export class ConfigService implements IConfigService {
       this.loggerService.error("Can't read .env");
     } else {
       this.config = result;
+      this.loggerService.log(".env");
     }
   }
 
