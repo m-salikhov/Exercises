@@ -10,14 +10,14 @@ export class ConfigService implements IConfigService {
   constructor(@inject(Types.LoggerService) private loggerService: ILogger) {
     const result = config();
     if (result.error) {
-      this.loggerService.error("Can't read .env");
+      this.loggerService.error("[ConfigService] Can't read .env");
     } else {
       this.config = result;
-      this.loggerService.log(".env");
+      this.loggerService.log("[ConfigService] load .env");
     }
   }
 
-  get<T extends string | number>(key: string): T {
-    return this.config[key] as T;
+  get(key: string): string {
+    return this.config.parsed[key];
   }
 }
