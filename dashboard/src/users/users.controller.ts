@@ -1,10 +1,10 @@
+import "reflect-metadata";
 import { inject, injectable } from "inversify";
 import { BaseController } from "../common/base.controller";
 import { HTTPError } from "../errors/http-error.class";
 import { Response, Request, NextFunction } from "express";
 import { ILogger } from "../logger/logger.interface";
 import { IUserController } from "./user.controller.interface";
-import "reflect-metadata";
 import { UserLoginDTO } from "./dto/user-login.dto";
 import { UserRegisterDTO } from "./dto/user-register.dto";
 import { Types } from "../types";
@@ -45,6 +45,6 @@ export class UserController extends BaseController implements IUserController {
       return;
     }
 
-    res.send({ email: result.email });
+    res.send(result);
   }
 }
