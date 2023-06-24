@@ -13,7 +13,7 @@
     "outDir": "./dist",
     // "baseUrl": "./",
     "lib": ["es6", "dom"],
-    "types": ["reflect-metadata"],
+    "types": ["reflect-metadata", "jest"],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,

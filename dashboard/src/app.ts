@@ -1,14 +1,15 @@
+import "reflect-metadata";
 import express from "express";
 import { Server } from "http";
-import { UserController } from "./users/users.controller";
+import { UsersController } from "./users/users.controller";
 import { inject, injectable } from "inversify";
 import { Types } from "./types";
-import "reflect-metadata";
-import { IUserController } from "./users/user.controller.interface";
+import { IUsersController } from "./users/user.controller.interface";
 import { ILogger } from "./logger/logger.interface";
 import { IExeptionFilter } from "./errors/exeption.filter.interface";
 import { IConfigService } from "./config/config.service.interface";
 import { PrismaService } from "./database/prisma.service";
+import { AuthMiddleware } from "./common/auth.middleware";
 
 @injectable()
 export class App {
@@ -17,7 +18,7 @@ export class App {
   server: Server;
 
   constructor(
-    @inject(Types.UserController) private userController: UserController,
+    @inject(Types.UsersController) private usersController: UsersController,
     @inject(Types.LoggerService) private loggerService: ILogger,
     @inject(Types.ExeptionFilter) private exeptionFilter: IExeptionFilter,
     @inject(Types.ConfigService) private configService: IConfigService,
@@ -27,12 +28,16 @@ export class App {
     this.port = +this.configService.get("PORT") || 8000;
   }
 
-  useBodyParser() {
+  useMidllewares() {
+    //body parser
     this.app.use(express.json());
+    //jwt
+    const authMiddleware = new AuthMiddleware(this.configService.get("SECRET"));
+    this.app.use(authMiddleware.execute.bind(authMiddleware));
   }
 
   useRoutes() {
-    this.app.use("/users", this.userController.router);
+    this.app.use("/users", this.usersController.router);
   }
 
   useExeptionFilter() {
@@ -40,7 +45,7 @@ export class App {
   }
 
   async init() {
-    this.useBodyParser();
+    this.useMidllewares();
     this.useRoutes();
     this.useExeptionFilter();
     await this.prismaService.connect();
