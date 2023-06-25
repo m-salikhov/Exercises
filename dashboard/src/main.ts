@@ -33,12 +33,12 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
     .inSingletonScope();
 });
 
-function bootstrap() {
+async function bootstrap() {
   const appContainer = new Container();
   appContainer.load(appBindings);
   const app = appContainer.get<App>(Types.App);
-  app.init();
+  await app.init();
   return { app, appContainer };
 }
 
-export const { app, appContainer } = bootstrap();
+export const boot = bootstrap();
